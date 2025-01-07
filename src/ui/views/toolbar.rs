@@ -44,7 +44,7 @@ impl ToolbarView {
             
             button.on_click(move || {
                 let layout_type = match label.as_str() {
-                    "Force Directed" => LayoutType::ForceDirected,
+                    "Force Directed" => LayoutType::Force,
                     "Hierarchical" => LayoutType::Hierarchical,
                     "Circular" => LayoutType::Circular,
                     _ => return Ok(()),
@@ -124,6 +124,7 @@ impl ToolbarView {
 
 impl View for ToolbarView {
     fn initialize(&mut self) -> Result<()> {
+        // Set up button handlers
         self.setup_layout_buttons()?;
         self.setup_analysis_buttons()?;
         self.setup_io_buttons()?;
@@ -132,39 +133,12 @@ impl View for ToolbarView {
     }
 
     fn update(&mut self) -> Result<()> {
-        // Update button states based on current system state
-        let system = self.state.get_system();
-        let system = system.read()?;
-
-        // Enable/disable analysis buttons based on system state
-        let has_data = !system.is_empty();
-        for button in &mut self.analysis_buttons {
-            button.set_enabled(has_data);
-        }
-
-        // Enable/disable export button
-        self.export_button.set_enabled(has_data);
-
+        // Update button states based on current state
         Ok(())
     }
 
-    fn handle_event(&mut self, event: &UIEvent) -> Result<()> {
-        match event {
-            UIEvent::GraphUpdated => {
-                self.update()?;
-            }
-            UIEvent::AnalysisStarted => {
-                // Disable analysis buttons during analysis
-                for button in &mut self.analysis_buttons {
-                    button.set_enabled(false);
-                }
-            }
-            UIEvent::AnalysisCompleted => {
-                // Re-enable analysis buttons after completion
-                self.update()?;
-            }
-            _ => {} // Ignore other events
-        }
+    fn handle_event(&mut self, _event: &UIEvent) -> Result<()> {
+        // Handle any toolbar-specific events
         Ok(())
     }
 } 

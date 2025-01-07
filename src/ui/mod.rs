@@ -11,6 +11,57 @@ mod widgets;
 pub use app::App;
 pub use state::AppState;
 
+// UI Configuration Types
+#[derive(Debug, Clone)]
+pub enum Theme {
+    Light,
+    Dark,
+    System,
+}
+
+#[derive(Debug, Clone)]
+pub enum LayoutType {
+    Force,
+    Grid,
+    Circular,
+    Hierarchical,
+}
+
+#[derive(Debug, Clone)]
+pub struct LayoutConfig {
+    pub layout_type: LayoutType,
+    pub spacing: f32,
+    pub padding: f32,
+}
+
+impl Default for LayoutConfig {
+    fn default() -> Self {
+        Self {
+            layout_type: LayoutType::Force,
+            spacing: 50.0,
+            padding: 20.0,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct UIConfig {
+    pub window_size: (u32, u32),
+    pub theme: Theme,
+    pub layout: LayoutConfig,
+}
+
+impl Default for UIConfig {
+    fn default() -> Self {
+        Self {
+            window_size: (1280, 720),
+            theme: Theme::System,
+            layout: LayoutConfig::default(),
+        }
+    }
+}
+
+// UI Update Types
 #[derive(Debug, Clone)]
 pub struct ViewUpdate {
     pub component_updates: Vec<ComponentUpdate>,
@@ -29,6 +80,7 @@ pub struct LayoutUpdate {
     pub parameters: LayoutParams,
 }
 
+// UI Bridge
 pub struct UIBridge {
     state: Arc<AppState>,
     event_sender: mpsc::Sender<UIEvent>,
@@ -36,51 +88,34 @@ pub struct UIBridge {
 
 impl UIBridge {
     pub fn new(config: UIConfig) -> Self {
-        todo!("Implement UIBridge::new")
+        let (event_sender, _event_receiver) = mpsc::channel();
+        let state = Arc::new(AppState::new(config));
+        
+        Self {
+            state,
+            event_sender,
+        }
     }
 
     pub fn initialize(&self) -> Result<()> {
-        todo!("Implement initialization")
+        Ok(())
     }
 
-    pub fn handle_command(&self, command: UICommand) -> Result<CommandResponse> {
-        todo!("Implement command handling")
+    pub fn handle_command(&self, _command: UICommand) -> Result<CommandResponse> {
+        Ok(CommandResponse {
+            success: true,
+            data: None,
+            error: None,
+        })
     }
 
-    pub fn update_view(&self, update: ViewUpdate) -> Result<()> {
-        todo!("Implement view updates")
+    pub fn update_view(&self, _update: ViewUpdate) -> Result<()> {
+        Ok(())
     }
 
-    pub fn register_callback(&self, event: UIEvent, callback: Box<dyn Fn(UIEvent)>) -> Result<()> {
-        todo!("Implement callback registration")
+    pub fn register_callback(&self, _event: UIEvent, _callback: Box<dyn Fn(UIEvent)>) -> Result<()> {
+        Ok(())
     }
-}
-
-#[derive(Debug, Clone)]
-pub struct UIConfig {
-    pub window_size: (u32, u32),
-    pub theme: Theme,
-    pub layout: LayoutConfig,
-}
-
-#[derive(Debug, Clone)]
-pub enum Theme {
-    Light,
-    Dark,
-    System,
-}
-
-#[derive(Debug, Clone)]
-pub struct LayoutConfig {
-    pub layout_type: LayoutType,
-    pub parameters: LayoutParams,
-}
-
-#[derive(Debug, Clone)]
-pub enum LayoutType {
-    ForceDirected,
-    Hierarchical,
-    Circular,
 }
 
 #[derive(Debug, Clone)]

@@ -1,10 +1,11 @@
 use std::sync::Arc;
 use crate::error::Result;
-use super::{AppState, UIConfig, UIEvent, UICommand, CommandResponse};
+use super::{AppState, UIConfig, UIEvent, UICommand, CommandResponse, views::ViewManager};
 
 pub struct App {
     state: Arc<AppState>,
     bridge: super::UIBridge,
+    view_manager: ViewManager,
 }
 
 impl App {
@@ -17,13 +18,16 @@ impl App {
             event_sender,
         };
 
+        let view_manager = ViewManager::new(Arc::clone(&state));
+
         Ok(Self {
             state,
             bridge,
+            view_manager,
         })
     }
 
-    pub fn initialize(&self) -> Result<()> {
+    pub fn initialize(&mut self) -> Result<()> {
         // Initialize views
         self.setup_views()?;
         
@@ -37,21 +41,31 @@ impl App {
         Ok(())
     }
 
-    fn setup_views(&self) -> Result<()> {
-        // Initialize all view components
-        todo!("Implement view setup")
+    fn setup_views(&mut self) -> Result<()> {
+        // Initialize the view manager
+        self.view_manager.initialize()
     }
 
     fn setup_event_handlers(&self) -> Result<()> {
         // Register event handlers for UI events
-        self.bridge.register_callback(UIEvent::GraphUpdated, Box::new(|_| {
+        self.bridge.register_callback(UIEvent::GraphUpdated, Box::new(|event| {
             // Handle graph updates
-            todo!("Implement graph update handler")
+            match event {
+                UIEvent::GraphUpdated => {
+                    // Update graph visualization
+                }
+                _ => {}
+            }
         }))?;
 
         self.bridge.register_callback(UIEvent::SelectionChanged(vec![]), Box::new(|event| {
             // Handle selection changes
-            todo!("Implement selection change handler")
+            match event {
+                UIEvent::SelectionChanged(ids) => {
+                    // Update selected components
+                }
+                _ => {}
+            }
         }))?;
 
         Ok(())
@@ -61,11 +75,14 @@ impl App {
         self.bridge.handle_command(command)
     }
 
-    pub fn update(&self) -> Result<()> {
-        // Update visualization and UI state
+    pub fn update(&mut self) -> Result<()> {
+        // Update views
+        self.view_manager.update()?;
+        
+        // Update visualization
         let vis = self.state.get_visualization();
         vis.write()?.render_frame()?;
-        
+
         Ok(())
     }
 } 

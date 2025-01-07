@@ -22,10 +22,26 @@ pub use crate::core::{Component, ComponentType, Relationship, RelationshipType, 
 pub use crate::error::{Error, Result};
 pub use crate::core::SystemManager;
 pub use crate::compute::algorithms::{AnalysisAlgorithm, CentralityAnalysis};
+pub use crate::ui::{App, UIConfig};
+
+use std::sync::Arc;
 
 /// Initialize the application with default configuration
 pub async fn init() -> Result<SystemManager> {
-    todo!("Implement system initialization")
+    // Initialize storage
+    let storage_config = storage::StorageConfig::default();
+    let storage = Arc::new(storage::StorageManager::new(storage_config)?);
+    storage.init_storage().await?;
+
+    // Initialize compute engine
+    let compute_config = compute::ComputeConfig::default();
+    let compute = Arc::new(compute::ComputeEngine::new(compute_config)?);
+
+    // Initialize event bus
+    let event_bus = Arc::new(events::EventBus::new());
+
+    // Create and return system manager
+    Ok(SystemManager::new(storage, compute, event_bus))
 }
 
 /// Version of the Complex Systems Analyzer

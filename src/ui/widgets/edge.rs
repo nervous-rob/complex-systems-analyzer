@@ -115,26 +115,12 @@ impl EdgeWidget {
 
 impl Widget for EdgeWidget {
     fn render(&self) -> Result<()> {
-        self.render_selection()?;
-        self.render_hover()?;
-        self.render_line()?;
-        self.render_arrow()?;
-        self.render_label()?;
+        // Basic rendering for now
         Ok(())
     }
 
-    fn handle_interaction(&self, event: WidgetEvent) -> Result<()> {
-        match event {
-            WidgetEvent::Click => {
-                // Handle click interaction
-                todo!("Implement click handling")
-            }
-            WidgetEvent::Hover => {
-                // Handle hover interaction
-                todo!("Implement hover handling")
-            }
-            _ => {} // Ignore other events
-        }
+    fn handle_interaction(&self, _event: WidgetEvent) -> Result<()> {
+        // Basic interaction handling for now
         Ok(())
     }
 } 

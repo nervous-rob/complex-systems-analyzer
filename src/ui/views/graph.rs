@@ -48,26 +48,22 @@ impl View for GraphView {
         
         // Set up initial view
         vis.initialize()?;
-        vis.render_frame()?;
-        
         Ok(())
     }
 
     fn update(&mut self) -> Result<()> {
+        // Update visualization
         let vis = self.state.get_visualization();
-        vis.write()?.render_frame()?;
+        let mut vis = vis.write()?;
+        vis.render_frame()?;
         Ok(())
     }
 
     fn handle_event(&mut self, event: &UIEvent) -> Result<()> {
         match event {
             UIEvent::GraphUpdated => self.handle_graph_update()?,
-            UIEvent::SelectionChanged(components) => self.handle_selection(components)?,
-            UIEvent::ViewportChanged => {
-                let vis = self.state.get_visualization();
-                vis.write()?.update_viewport()?;
-            }
-            _ => {} // Ignore other events
+            UIEvent::SelectionChanged(ids) => self.handle_selection(ids)?,
+            _ => {}
         }
         Ok(())
     }

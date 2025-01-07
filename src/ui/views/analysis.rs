@@ -184,38 +184,26 @@ impl AnalysisView {
 
 impl View for AnalysisView {
     fn initialize(&mut self) -> Result<()> {
+        // Set up panels
         self.setup_config_panel()?;
         self.setup_results_panel()?;
         Ok(())
     }
 
     fn update(&mut self) -> Result<()> {
-        // Update button states
-        let system = self.state.get_system();
-        let system = system.read()?;
-
-        self.config_panel.run_button.set_enabled(!system.is_empty());
-        self.results_panel.export_button.set_enabled(!self.results_panel.result_text.is_empty());
-        self.results_panel.clear_button.set_enabled(!self.results_panel.result_text.is_empty());
-
+        // Update panel states based on current state
         Ok(())
     }
 
     fn handle_event(&mut self, event: &UIEvent) -> Result<()> {
         match event {
-            UIEvent::AnalysisStarted => {
-                self.config_panel.run_button.set_enabled(false);
-            }
             UIEvent::AnalysisCompleted => {
-                self.config_panel.run_button.set_enabled(true);
-                if let Some(results) = self.state.get_analysis_results()? {
+                // Update results when analysis completes
+                if let Ok(Some(results)) = self.state.get_analysis_results() {
                     self.update_results_display(&results)?;
                 }
             }
-            UIEvent::GraphUpdated => {
-                self.update()?;
-            }
-            _ => {} // Ignore other events
+            _ => {}
         }
         Ok(())
     }

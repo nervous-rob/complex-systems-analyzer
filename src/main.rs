@@ -9,11 +9,20 @@ async fn main() -> csa::Result<()> {
     info!("Starting Complex Systems Analyzer v{}", csa::VERSION);
 
     // Initialize the system
-    let system_manager = csa::init().await?;
+    let _system_manager = csa::init().await?;
 
     info!("System initialized successfully");
 
-    // TODO: Initialize UI and start event loop
+    // Initialize UI
+    let ui_config = csa::ui::UIConfig::default();
+    let mut app = csa::ui::App::new(ui_config)?;
+    app.initialize()?;
 
-    Ok(())
+    info!("UI initialized successfully");
+
+    // Start event loop
+    loop {
+        app.update()?;
+        tokio::time::sleep(tokio::time::Duration::from_millis(16)).await;
+    }
 }

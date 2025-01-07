@@ -164,25 +164,14 @@ impl SidebarView {
 
 impl View for SidebarView {
     fn initialize(&mut self) -> Result<()> {
-        // Set up initial panel states
-        let title_button = &mut self.property_panel.title_button;
-        title_button.on_click(|| {
-            // Toggle property panel expansion
-            todo!("Implement property panel toggle")
-        });
-
-        let title_button = &mut self.filter_panel.title_button;
-        title_button.on_click(|| {
-            // Toggle filter panel expansion
-            todo!("Implement filter panel toggle")
-        });
-
+        // Initialize panels
+        self.update_property_panel()?;
         self.update_filter_panel()?;
         Ok(())
     }
 
     fn update(&mut self) -> Result<()> {
-        // Update panel contents
+        // Update panels based on current state
         self.update_property_panel()?;
         self.update_filter_panel()?;
         Ok(())
@@ -191,12 +180,10 @@ impl View for SidebarView {
     fn handle_event(&mut self, event: &UIEvent) -> Result<()> {
         match event {
             UIEvent::SelectionChanged(_) => {
+                // Update property panel when selection changes
                 self.update_property_panel()?;
             }
-            UIEvent::GraphUpdated => {
-                self.update_filter_panel()?;
-            }
-            _ => {} // Ignore other events
+            _ => {}
         }
         Ok(())
     }

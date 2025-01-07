@@ -15,7 +15,7 @@ impl AppState {
     pub fn new(config: super::UIConfig) -> Self {
         Self {
             system: Arc::new(RwLock::new(System::default())),
-            visualization: Arc::new(RwLock::new(VisualizationEngine::new(config.layout.clone().into()))),
+            visualization: Arc::new(RwLock::new(VisualizationEngine::new(config.layout.clone()))),
             selected_components: RwLock::new(Vec::new()),
             active_analysis: RwLock::new(None),
             ui_config: RwLock::new(config),
