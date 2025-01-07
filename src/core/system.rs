@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use uuid::Uuid;
 use chrono::Utc;
 use crate::error::{Error, Result};
-use crate::core::types::{ComponentState, ComponentStatus, ComponentType, RelationshipType};
+use crate::core::types::{ComponentState, ComponentType, RelationshipType};
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]

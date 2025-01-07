@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::sync::mpsc;
 use serde_json::Value as JsonValue;
-use crate::error::{Error, Result};
+use crate::error::Result;
 
 mod app;
 mod state;

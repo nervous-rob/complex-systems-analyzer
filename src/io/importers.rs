@@ -1,15 +1,12 @@
-use std::io::Cursor;
 use serde_json::Value;
 use uuid::Uuid;
-use chrono::Utc;
 use std::collections::HashMap;
-use std::sync::Arc;
 
 use crate::core::System;
 use crate::core::types::{ComponentType, RelationshipType};
 use crate::core::{Component, Relationship};
-use crate::validation::{ValidationResult, ValidationError, ValidationWarning, ValidationMetrics, ValidationSeverity, ValidationContext};
-use crate::error::{Error, Result};
+use crate::validation::{ValidationResult, ValidationError, ValidationMetrics, ValidationSeverity, ValidationContext};
+use crate::error::Result;
 use super::ImportFormat;
 
 pub trait SystemImporter: Send + Sync {

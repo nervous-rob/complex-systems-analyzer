@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 use tokio::fs;
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use uuid::Uuid;
 use std::collections::HashMap;
 use zip;
@@ -8,9 +8,9 @@ use csv;
 use std::io::Write;
 
 use crate::core::{System, Component, Relationship};
-use crate::core::types::{ComponentType, ComponentState, RelationshipType};
+use crate::core::types::ComponentState;
 use crate::error::{Error, Result};
-use super::{ExportFormat, FileConfig, ExportMetadata, ImportFormat};
+use super::{ExportFormat, FileConfig, ImportFormat};
 
 pub struct FileManager {
     base_path: PathBuf,

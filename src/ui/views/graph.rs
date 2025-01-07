@@ -1,6 +1,5 @@
 use std::sync::Arc;
 use crate::error::Result;
-use crate::core::SystemExt;
 use super::View;
 use crate::ui::{AppState, UIEvent};
 

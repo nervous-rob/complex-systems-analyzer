@@ -1,11 +1,6 @@
-use std::collections::HashMap;
 use std::sync::Arc;
-use std::time::Duration;
-use tokio::sync::RwLock;
-use uuid::Uuid;
-use chrono::{DateTime, Utc};
 
-use crate::error::{Error, Result};
+use crate::error::Result;
 
 mod thread_pool;
 mod scheduler;

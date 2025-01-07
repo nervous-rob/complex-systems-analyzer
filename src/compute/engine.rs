@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use tokio::sync::{RwLock, mpsc};
+use tokio::sync::RwLock;
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 use rayon::ThreadPool;
@@ -13,7 +13,6 @@ use super::{
     algorithms::{
         AnalysisAlgorithm, CentralityAnalysis, CommunityDetection, PathAnalysis,
         CentralityParams, CommunityParams, PathParams, PathWeightFunction,
-        CentralityType, CommunityType, PathType,
         Graph, NodeId,
     },
     AnalysisType,

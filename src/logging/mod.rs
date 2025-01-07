@@ -1,14 +1,11 @@
 use std::path::PathBuf;
-use tracing::Level;
 use tracing_subscriber::{
     fmt,
     EnvFilter,
-    Layer,
     Registry,
     layer::SubscriberExt,
 };
 use tracing_appender::non_blocking::WorkerGuard;
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::error::Result;

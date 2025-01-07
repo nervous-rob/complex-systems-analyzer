@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use uuid::Uuid;
 use crate::error::Result;
-use crate::core::{Component, Relationship, SystemExt};
+use crate::core::{Component, SystemExt};
 use super::View;
 use crate::ui::{AppState, UIEvent};
 use crate::ui::widgets::{Button, Checkbox, Slider};

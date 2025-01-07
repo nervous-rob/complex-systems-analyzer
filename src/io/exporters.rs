@@ -1,9 +1,7 @@
-use std::collections::HashMap;
 use std::io::Write;
-use serde_json::json;
 
 use crate::core::System;
-use crate::error::{Error, Result};
+use crate::error::Result;
 use super::ExportFormat;
 
 pub trait SystemExporter: Send + Sync {

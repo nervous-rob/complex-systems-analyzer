@@ -3,7 +3,6 @@ use dashmap::DashMap;
 use uuid::Uuid;
 
 use crate::core::{System, Component, Relationship};
-use crate::error::Result;
 
 const DEFAULT_CACHE_TTL: Duration = Duration::from_secs(300); // 5 minutes
 

@@ -7,7 +7,7 @@ use super::{
     AnalysisAlgorithm, Graph, NodeId, Weight, AnalysisResult,
     CommunityParams, CommunityType,
 };
-use crate::error::{Error, Result};
+use crate::error::Result;
 
 pub struct CommunityDetection {
     algorithm: CommunityType,

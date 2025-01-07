@@ -7,7 +7,7 @@ use super::{
     AnalysisAlgorithm, Graph, NodeId, Weight, AnalysisResult,
     PathParams, PathType, PathWeightFunction,
 };
-use crate::error::{Error, Result};
+use crate::error::Result;
 
 pub struct PathAnalysis {
     algorithm: PathType,

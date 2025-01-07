@@ -1,4 +1,3 @@
-use std::ops::{Add, Sub, Mul, Div};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vector2 {

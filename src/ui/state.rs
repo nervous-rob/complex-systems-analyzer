@@ -1,5 +1,5 @@
 use std::sync::{Arc, RwLock};
-use crate::core::{System, Component, Relationship};
+use crate::core::System;
 use crate::visualization::VisualizationEngine;
 use crate::error::Result;
 

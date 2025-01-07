@@ -1,12 +1,12 @@
 use std::path::Path;
-use rusqlite::{Connection, params, Result as SqliteResult};
+use rusqlite::{Connection, params};
 use uuid::Uuid;
 use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
 use std::sync::Mutex;
 
 use crate::error::{Error, Result};
-use crate::core::{Component, System};
+use crate::core::Component;
 
 const SCHEMA_VERSION: u32 = 1;
 

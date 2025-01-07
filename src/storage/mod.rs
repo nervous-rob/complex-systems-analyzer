@@ -13,7 +13,7 @@ mod sqlite;
 mod cache;
 
 use rocks::RocksDB;
-use sqlite::{SQLiteDB, SystemMetadata, ComponentMetadata};
+use sqlite::{SQLiteDB, SystemMetadata};
 use cache::{Cache, CacheStats};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -3,10 +3,10 @@ use async_trait::async_trait;
 use serde_json::json;
 
 use super::{
-    AnalysisAlgorithm, Graph, NodeId, Weight, AnalysisResult,
+    AnalysisAlgorithm, Graph, NodeId, AnalysisResult,
     CentralityParams, CentralityType,
 };
-use crate::error::{Error, Result};
+use crate::error::Result;
 
 pub struct CentralityAnalysis {
     algorithm_type: CentralityType,

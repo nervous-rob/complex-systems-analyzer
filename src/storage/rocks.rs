@@ -1,11 +1,10 @@
 use std::path::Path;
-use rocksdb::{DB, ColumnFamily, Options, WriteBatch, IteratorMode, Snapshot, AsColumnFamilyRef, BoundColumnFamily};
+use rocksdb::{DB, Options, WriteBatch, IteratorMode, Snapshot, AsColumnFamilyRef, BoundColumnFamily};
 use uuid::Uuid;
-use serde::{Serialize, Deserialize};
 use std::sync::Arc;
 
 use crate::error::{Error, Result};
-use crate::core::{System, Component, Relationship};
+use crate::core::{Component, Relationship};
 
 const CF_NODES: &str = "nodes";
 const CF_EDGES: &str = "edges";
