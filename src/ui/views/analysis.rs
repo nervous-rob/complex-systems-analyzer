@@ -196,11 +196,8 @@ impl View for AnalysisView {
 
     fn handle_event(&mut self, event: &UIEvent) -> Result<()> {
         match event {
-            UIEvent::AnalysisCompleted => {
-                // Update results when analysis completes
-                if let Ok(Some(results)) = self.state.get_analysis_results() {
-                    self.update_results_display(&results)?;
-                }
+            UIEvent::AnalysisCompleted(result) => {
+                self.update_results_display(result)?;
             }
             _ => {}
         }

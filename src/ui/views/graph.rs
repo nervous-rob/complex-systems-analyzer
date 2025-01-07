@@ -20,7 +20,7 @@ impl GraphView {
         let system = system.read()?;
         
         vis.update_graph(&system)?;
-        vis.render_frame()?;
+        vis.render()?;
         
         Ok(())
     }
@@ -32,8 +32,8 @@ impl GraphView {
         let mut vis = vis.write()?;
         
         // Update visualization to highlight selected components
-        vis.update_selection(selected_ids)?;
-        vis.render_frame()?;
+        vis.update_selection(&selected_ids)?;
+        vis.render()?;
         
         Ok(())
     }
@@ -41,12 +41,7 @@ impl GraphView {
 
 impl View for GraphView {
     fn initialize(&mut self) -> Result<()> {
-        // Initialize the visualization engine
-        let vis = self.state.get_visualization();
-        let mut vis = vis.write()?;
-        
-        // Set up initial view
-        vis.initialize()?;
+        // GraphView initialization is now handled by App
         Ok(())
     }
 
@@ -54,7 +49,7 @@ impl View for GraphView {
         // Update visualization
         let vis = self.state.get_visualization();
         let mut vis = vis.write()?;
-        vis.render_frame()?;
+        vis.render()?;
         Ok(())
     }
 

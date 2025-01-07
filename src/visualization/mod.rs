@@ -1,143 +1,119 @@
-mod renderer;
+pub mod renderer;
 
-use winit::{
-    event_loop::{EventLoop, ControlFlow},
-    window::WindowBuilder,
-    event::*,
-};
-use crate::error::{Result, Error};
+use std::sync::Arc;
+use winit::window::Window;
+use crate::error::Result;
 use crate::core::System;
-use crate::ui::LayoutConfig;
+use uuid::Uuid;
+use std::collections::HashMap;
 
-pub struct VisualizationEngine {
-    layout_config: LayoutConfig,
+pub struct Visualization {
+    pub(crate) renderer: Option<Renderer>,
     initialized: bool,
-    event_loop: Option<EventLoop<()>>,
-    renderer: Option<renderer::Renderer>,
 }
 
-impl VisualizationEngine {
-    pub fn new(config: LayoutConfig) -> Self {
+impl Visualization {
+    pub fn new() -> Self {
         Self {
-            layout_config: config,
-            initialized: false,
-            event_loop: None,
             renderer: None,
+            initialized: false,
         }
     }
 
-    pub fn get_layout_config(&self) -> &LayoutConfig {
-        &self.layout_config
-    }
+    pub fn initialize(&mut self, window: Arc<Window>) -> Result<()> {
+        println!("Starting visualization initialization...");
+        let mut renderer = match pollster::block_on(Renderer::new(window)) {
+            Ok(r) => {
+                println!("Successfully created renderer");
+                r
+            },
+            Err(e) => {
+                println!("Failed to create renderer: {:?}", e);
+                return Err(e);
+            }
+        };
+        
+        println!("Adding test nodes...");
+        // Add some test nodes to verify rendering
+        let test_nodes = vec![
+            NodeData {
+                id: Uuid::new_v4(),
+                position: [-200.0, 0.0],
+                size: 50.0,
+                color: [1.0, 0.0, 0.0, 1.0],
+                label: "Test Node 1".to_string(),
+            },
+            NodeData {
+                id: Uuid::new_v4(),
+                position: [200.0, 0.0],
+                size: 50.0,
+                color: [0.0, 1.0, 0.0, 1.0],
+                label: "Test Node 2".to_string(),
+            },
+        ];
+        
+        if let Err(e) = renderer.update_graph_data(test_nodes, vec![]) {
+            println!("Failed to update graph data: {:?}", e);
+            return Err(e);
+        }
+        println!("Successfully updated graph data");
 
-    pub fn initialize(&mut self) -> Result<()> {
-        let event_loop = EventLoop::new().map_err(|e| Error::system(e.to_string()))?;
-        let window = std::sync::Arc::new(
-            WindowBuilder::new()
-                .with_title("Complex Systems Analyzer")
-                .with_inner_size(winit::dpi::LogicalSize::new(800, 600))
-                .build(&event_loop)
-                .map_err(|e| Error::system(e.to_string()))?
-        );
-
-        let renderer = pollster::block_on(renderer::Renderer::new(window.clone()))?;
+        if let Err(e) = renderer.fit_to_view() {
+            println!("Failed to fit to view: {:?}", e);
+            return Err(e);
+        }
+        println!("Successfully fit to view");
         
         self.renderer = Some(renderer);
-        self.event_loop = Some(event_loop);
         self.initialized = true;
+        println!("Visualization initialization complete");
         Ok(())
     }
 
-    pub fn update_graph(&mut self, _system: &System) -> Result<()> {
-        if !self.initialized {
-            return Ok(());
+    pub fn update_graph(&mut self, system: &System) -> Result<()> {
+        if let Some(renderer) = &mut self.renderer {
+            // Convert system data to renderer nodes/edges
+            let nodes = system.components.iter().map(|(id, comp)| NodeData {
+                id: *id,
+                position: [0.0, 0.0], // Initial position, will be adjusted by layout
+                size: 50.0,
+                color: [1.0, 0.0, 0.0, 1.0],
+                label: comp.name.clone(),
+            }).collect();
+
+            renderer.update_graph_data(nodes, vec![])?;
+            renderer.fit_to_view()?;
         }
         Ok(())
     }
 
-    pub fn update_layout(&mut self) -> Result<()> {
-        if !self.initialized {
-            return Ok(());
+    pub fn fit_to_view(&mut self) -> Result<()> {
+        if let Some(renderer) = &mut self.renderer {
+            renderer.fit_to_view()?;
         }
         Ok(())
     }
 
-    pub fn update_selection(&mut self, _selected_ids: &[String]) -> Result<()> {
-        if !self.initialized {
-            return Ok(());
+    pub fn update_selection(&mut self, selected_ids: &[String]) -> Result<()> {
+        if let Some(renderer) = &mut self.renderer {
+            let ids: Vec<Uuid> = selected_ids.iter()
+                .filter_map(|id| Uuid::parse_str(id).ok())
+                .collect();
+            renderer.update_selection(&ids)?;
         }
         Ok(())
     }
 
-    pub fn update_viewport(&mut self) -> Result<()> {
-        if !self.initialized {
-            return Ok(());
-        }
-        Ok(())
-    }
-
-    pub fn render_frame(&mut self) -> Result<()> {
-        if !self.initialized {
-            return Ok(());
-        }
-
+    pub fn render(&mut self) -> Result<()> {
         if let Some(renderer) = &mut self.renderer {
             renderer.render()?;
         }
-        
         Ok(())
     }
 
-    pub fn run(mut self) -> Result<()> {
-        let event_loop = self.event_loop.take().expect("Event loop not initialized");
-        let mut renderer = self.renderer.take().expect("Renderer not initialized");
-
-        event_loop.run(move |event, window_target| {
-            window_target.set_control_flow(ControlFlow::Poll);
-
-            match event {
-                Event::WindowEvent { window_id, event } if window_id == renderer.window().id() => {
-                    match event {
-                        WindowEvent::CloseRequested => window_target.exit(),
-                        WindowEvent::Resized(physical_size) => {
-                            renderer.resize(physical_size);
-                        }
-                        WindowEvent::RedrawRequested => {
-                            if let Err(e) = renderer.render() {
-                                eprintln!("Render error: {:?}", e);
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-                Event::AboutToWait => {
-                    renderer.window().request_redraw();
-                }
-                _ => {}
-            }
-        }).map_err(|e| Error::system(e.to_string()))?;
-
-        Ok(())
+    pub fn take_renderer(&mut self) -> Option<Renderer> {
+        self.renderer.take()
     }
+}
 
-    pub fn zoom_in(&mut self) -> Result<()> {
-        if !self.initialized {
-            return Ok(());
-        }
-        Ok(())
-    }
-
-    pub fn zoom_out(&mut self) -> Result<()> {
-        if !self.initialized {
-            return Ok(());
-        }
-        Ok(())
-    }
-
-    pub fn fit_view(&mut self) -> Result<()> {
-        if !self.initialized {
-            return Ok(());
-        }
-        Ok(())
-    }
-} 
+use self::renderer::{Renderer, NodeData, EdgeData}; 

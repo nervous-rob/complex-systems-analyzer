@@ -173,6 +173,7 @@ impl ConfigManager {
                     spacing: 50.0,
                     padding: 20.0,
                 },
+                window_title: "Complex Systems Analyzer".to_string(),
             },
             visualization: VisConfig {
                 renderer_type: "webgl".to_string(),
@@ -418,6 +419,7 @@ impl Default for AppConfig {
                 window_size: (1280, 720),
                 theme: crate::ui::Theme::Dark,
                 layout: crate::ui::LayoutConfig::default(),
+                window_title: "Complex Systems Analyzer".to_string(),
             },
             visualization: VisConfig::default(),
             logging: LogConfig::default(),

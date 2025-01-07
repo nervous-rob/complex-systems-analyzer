@@ -194,6 +194,76 @@ impl System {
         stack.pop();
         Ok(())
     }
+
+    pub fn analyze_connectivity(&self) -> HashMap<Uuid, f64> {
+        let mut connectivity: HashMap<Uuid, f64> = HashMap::new();
+        
+        for component_id in self.components.keys() {
+            let mut connections = 0.0;
+            for relationship in self.relationships.values() {
+                if relationship.source_id == *component_id || relationship.target_id == *component_id {
+                    connections += 1.0;
+                }
+            }
+            connectivity.insert(*component_id, connections);
+        }
+        
+        connectivity
+    }
+
+    pub fn get_component_neighbors(&self, component_id: &Uuid) -> Vec<&Component> {
+        let mut neighbors = Vec::new();
+        
+        for relationship in self.relationships.values() {
+            if relationship.source_id == *component_id {
+                if let Some(target) = self.components.get(&relationship.target_id) {
+                    neighbors.push(target);
+                }
+            } else if relationship.target_id == *component_id {
+                if let Some(source) = self.components.get(&relationship.source_id) {
+                    neighbors.push(source);
+                }
+            }
+        }
+        
+        neighbors
+    }
+
+    pub fn update_component_state(&mut self, component_id: &Uuid, new_state: ComponentState) -> Result<()> {
+        if let Some(component) = self.components.get_mut(component_id) {
+            component.update_state(new_state);
+            component.updated_at = Utc::now();
+            self.updated_at = Utc::now();
+            Ok(())
+        } else {
+            Err(Error::ComponentNotFound(*component_id))
+        }
+    }
+
+    pub fn get_relationships_between(&self, source_id: &Uuid, target_id: &Uuid) -> Vec<&Relationship> {
+        self.relationships
+            .values()
+            .filter(|r| (r.source_id == *source_id && r.target_id == *target_id) ||
+                       (r.source_id == *target_id && r.target_id == *source_id))
+            .collect()
+    }
+
+    pub fn calculate_system_complexity(&self) -> f64 {
+        let component_count = self.components.len() as f64;
+        let relationship_count = self.relationships.len() as f64;
+        
+        if component_count == 0.0 {
+            return 0.0;
+        }
+        
+        // Calculate complexity as a ratio of relationships to possible relationships
+        let max_possible_relationships = component_count * (component_count - 1.0) / 2.0;
+        if max_possible_relationships == 0.0 {
+            return 0.0;
+        }
+        
+        relationship_count / max_possible_relationships
+    }
 }
 
 impl Component {

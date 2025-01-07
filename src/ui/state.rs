@@ -1,11 +1,11 @@
 use std::sync::{Arc, RwLock};
 use crate::core::System;
-use crate::visualization::VisualizationEngine;
+use crate::visualization::Visualization;
 use crate::error::Result;
 
 pub struct AppState {
     system: Arc<RwLock<System>>,
-    visualization: Arc<RwLock<VisualizationEngine>>,
+    visualization: Arc<RwLock<Visualization>>,
     selected_components: RwLock<Vec<String>>,
     active_analysis: RwLock<Option<String>>,
     ui_config: RwLock<super::UIConfig>,
@@ -15,7 +15,7 @@ impl AppState {
     pub fn new(config: super::UIConfig) -> Self {
         Self {
             system: Arc::new(RwLock::new(System::default())),
-            visualization: Arc::new(RwLock::new(VisualizationEngine::new(config.layout.clone()))),
+            visualization: Arc::new(RwLock::new(Visualization::new())),
             selected_components: RwLock::new(Vec::new()),
             active_analysis: RwLock::new(None),
             ui_config: RwLock::new(config),
@@ -26,7 +26,7 @@ impl AppState {
         Arc::clone(&self.system)
     }
 
-    pub fn get_visualization(&self) -> Arc<RwLock<VisualizationEngine>> {
+    pub fn get_visualization(&self) -> Arc<RwLock<Visualization>> {
         Arc::clone(&self.visualization)
     }
 

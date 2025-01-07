@@ -2,6 +2,8 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::sync::PoisonError;
 use serde::Serialize;
+use std::sync::mpsc::SendError;
+use crate::ui::UIEvent;
 
 #[derive(Debug, Clone, Serialize)]
 pub enum Error {
@@ -173,6 +175,12 @@ impl From<winit::error::EventLoopError> for Error {
 impl From<winit::error::OsError> for Error {
     fn from(err: winit::error::OsError) -> Self {
         Error::System(err.to_string())
+    }
+}
+
+impl From<SendError<UIEvent>> for Error {
+    fn from(err: SendError<UIEvent>) -> Self {
+        Error::system(format!("Failed to send UI event: {}", err))
     }
 }
 
