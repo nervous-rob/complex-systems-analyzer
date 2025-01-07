@@ -1,5 +1,6 @@
 use std::path::Path;
 use super::AppConfig;
+use crate::ui::Theme;
 
 #[derive(Debug, Clone)]
 pub struct ValidationResult {
@@ -125,13 +126,9 @@ fn validate_compute_config(config: &super::ComputeConfig, result: &mut Validatio
     }
 }
 
-fn validate_ui_config(config: &super::UIConfig, result: &mut ValidationResult) {
-    let valid_themes = ["light", "dark", "system"];
-    if !valid_themes.contains(&config.theme.as_str()) {
-        result.add_error(format!(
-            "Invalid theme '{}'. Must be one of: {:?}",
-            config.theme, valid_themes
-        ));
+fn validate_ui_config(config: &crate::ui::UIConfig, result: &mut ValidationResult) {
+    if let Theme::System = config.theme {
+        result.add_warning("System theme may not be supported on all platforms");
     }
 
     let (width, height) = config.window_size;

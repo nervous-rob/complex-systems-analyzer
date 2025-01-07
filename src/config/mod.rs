@@ -16,7 +16,7 @@ pub struct AppConfig {
     pub system: SystemConfig,
     pub storage: StorageConfig,
     pub compute: ComputeConfig,
-    pub ui: UIConfig,
+    pub ui: crate::ui::UIConfig,
     pub visualization: VisConfig,
     pub logging: LogConfig,
 }
@@ -42,14 +42,6 @@ pub struct ComputeConfig {
     pub thread_count: usize,
     pub task_queue_size: usize,
     pub max_memory: usize,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct UIConfig {
-    pub theme: String,
-    pub window_size: (u32, u32),
-    pub auto_layout: bool,
-    pub show_tooltips: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -173,11 +165,14 @@ impl ConfigManager {
                 task_queue_size: 1000,
                 max_memory: 1024 * 1024 * 1024, // 1GB
             },
-            ui: UIConfig {
-                theme: "dark".to_string(),
+            ui: crate::ui::UIConfig {
                 window_size: (1280, 720),
-                auto_layout: true,
-                show_tooltips: true,
+                theme: crate::ui::Theme::Dark,
+                layout: crate::ui::LayoutConfig {
+                    layout_type: crate::ui::LayoutType::Force,
+                    spacing: 50.0,
+                    padding: 20.0,
+                },
             },
             visualization: VisConfig {
                 renderer_type: "webgl".to_string(),
@@ -331,27 +326,31 @@ impl ComputeConfigUpdate {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct UIConfigUpdate {
-    pub theme: Option<String>,
+    pub theme: Option<crate::ui::Theme>,
     pub window_size: Option<(u32, u32)>,
-    pub auto_layout: Option<bool>,
-    pub show_tooltips: Option<bool>,
+    pub layout_type: Option<crate::ui::LayoutType>,
+    pub spacing: Option<f32>,
+    pub padding: Option<f32>,
 }
 
 impl UIConfigUpdate {
-    fn apply(self, config: &mut UIConfig) -> Result<()> {
+    fn apply(self, config: &mut crate::ui::UIConfig) -> Result<()> {
         if let Some(theme) = self.theme {
             config.theme = theme;
         }
         if let Some(window_size) = self.window_size {
             config.window_size = window_size;
         }
-        if let Some(auto_layout) = self.auto_layout {
-            config.auto_layout = auto_layout;
+        if let Some(layout_type) = self.layout_type {
+            config.layout.layout_type = layout_type;
         }
-        if let Some(show_tooltips) = self.show_tooltips {
-            config.show_tooltips = show_tooltips;
+        if let Some(spacing) = self.spacing {
+            config.layout.spacing = spacing;
+        }
+        if let Some(padding) = self.padding {
+            config.layout.padding = padding;
         }
         Ok(())
     }
@@ -406,5 +405,77 @@ impl LogConfigUpdate {
             config.format = format;
         }
         Ok(())
+    }
+}
+
+impl Default for AppConfig {
+    fn default() -> Self {
+        Self {
+            system: SystemConfig::default(),
+            storage: StorageConfig::default(),
+            compute: ComputeConfig::default(),
+            ui: crate::ui::UIConfig {
+                window_size: (1280, 720),
+                theme: crate::ui::Theme::Dark,
+                layout: crate::ui::LayoutConfig::default(),
+            },
+            visualization: VisConfig::default(),
+            logging: LogConfig::default(),
+        }
+    }
+}
+
+impl Default for SystemConfig {
+    fn default() -> Self {
+        Self {
+            max_components: 10000,
+            max_relationships: 100000,
+            auto_save_interval: Duration::from_secs(300),
+            validation_level: ValidationLevel::Normal,
+        }
+    }
+}
+
+impl Default for StorageConfig {
+    fn default() -> Self {
+        Self {
+            rocks_db_path: PathBuf::from("data/rocks.db"),
+            sqlite_path: PathBuf::from("data/sqlite.db"),
+            max_cache_size: 1024 * 1024 * 1024, // 1GB
+            backup_interval: Duration::from_secs(3600),
+        }
+    }
+}
+
+impl Default for ComputeConfig {
+    fn default() -> Self {
+        Self {
+            thread_count: num_cpus::get(),
+            task_queue_size: 1000,
+            max_memory: 1024 * 1024 * 1024, // 1GB
+        }
+    }
+}
+
+impl Default for VisConfig {
+    fn default() -> Self {
+        Self {
+            renderer_type: "webgl".to_string(),
+            max_fps: 60,
+            antialiasing: true,
+            vsync: true,
+        }
+    }
+}
+
+impl Default for LogConfig {
+    fn default() -> Self {
+        Self {
+            log_level: LogLevel::Info,
+            log_path: PathBuf::from("logs"),
+            rotation_size: 10 * 1024 * 1024, // 10MB
+            retention_period: Duration::from_secs(7 * 24 * 3600), // 7 days
+            format: LogFormat::Json,
+        }
     }
 } 

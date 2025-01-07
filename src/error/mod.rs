@@ -146,4 +146,34 @@ impl<T> From<PoisonError<T>> for Error {
     }
 }
 
+impl From<wgpu::CreateSurfaceError> for Error {
+    fn from(err: wgpu::CreateSurfaceError) -> Self {
+        Error::System(err.to_string())
+    }
+}
+
+impl From<wgpu::RequestDeviceError> for Error {
+    fn from(err: wgpu::RequestDeviceError) -> Self {
+        Error::System(err.to_string())
+    }
+}
+
+impl From<wgpu::SurfaceError> for Error {
+    fn from(err: wgpu::SurfaceError) -> Self {
+        Error::System(err.to_string())
+    }
+}
+
+impl From<winit::error::EventLoopError> for Error {
+    fn from(err: winit::error::EventLoopError) -> Self {
+        Error::System(err.to_string())
+    }
+}
+
+impl From<winit::error::OsError> for Error {
+    fn from(err: winit::error::OsError) -> Self {
+        Error::System(err.to_string())
+    }
+}
+
 pub type Result<T> = std::result::Result<T, Error>; 

@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use std::sync::mpsc;
 use serde_json::Value as JsonValue;
+use serde::{Serialize, Deserialize};
 use crate::error::Result;
 
 mod app;
@@ -12,14 +13,14 @@ pub use app::App;
 pub use state::AppState;
 
 // UI Configuration Types
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Theme {
     Light,
     Dark,
     System,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum LayoutType {
     Force,
     Grid,
@@ -27,7 +28,7 @@ pub enum LayoutType {
     Hierarchical,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LayoutConfig {
     pub layout_type: LayoutType,
     pub spacing: f32,
@@ -44,7 +45,7 @@ impl Default for LayoutConfig {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UIConfig {
     pub window_size: (u32, u32),
     pub theme: Theme,

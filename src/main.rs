@@ -1,5 +1,6 @@
 use complex_systems_analyzer as csa;
 use tracing::info;
+use csa::ui::UIConfig;
 
 #[tokio::main]
 async fn main() -> csa::Result<()> {
@@ -14,15 +15,14 @@ async fn main() -> csa::Result<()> {
     info!("System initialized successfully");
 
     // Initialize UI
-    let ui_config = csa::ui::UIConfig::default();
-    let mut app = csa::ui::App::new(ui_config)?;
-    app.initialize()?;
+    let ui_config = UIConfig::default();
+    let mut visualization = csa::visualization::VisualizationEngine::new(ui_config.layout.clone());
+    visualization.initialize()?;
 
-    info!("UI initialized successfully");
+    info!("Visualization initialized successfully");
 
     // Start event loop
-    loop {
-        app.update()?;
-        tokio::time::sleep(tokio::time::Duration::from_millis(16)).await;
-    }
+    visualization.run()?;
+
+    Ok(())
 }
